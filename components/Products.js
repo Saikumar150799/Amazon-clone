@@ -16,9 +16,12 @@ import {
 } from "react-native-responsive-screen";
 import { COLORS } from "../theme";
 import { useNavigation } from "@react-navigation/native";
+import { useCartStore } from "../store";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 
 const ProductsCard = ({ product }) => {
+  const addToCart = useCartStore((state) => state.addToCart);
   const navigation = useNavigation();
   return (
     <Pressable style={styles.card} onPress={() => navigation.navigate("ProductItem", {product})}>
@@ -37,7 +40,7 @@ const ProductsCard = ({ product }) => {
         <Text style={styles.reviews}>{product.rating.rate} ratings</Text>
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={()=>addToCart(product)}>
         <Text style={styles.buttonText}>Add to Cart</Text>
       </TouchableOpacity>
     </Pressable>
@@ -45,9 +48,8 @@ const ProductsCard = ({ product }) => {
 };
 
 const Products = ({ products }) => {
-  const navigation = useNavigation();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {marginBottom: useBottomTabBarHeight()}]}>
       <Text style={styles.title}>Products</Text>
       {products.length === 0 && (
         <ActivityIndicator size="large" color={COLORS.black} />
@@ -92,6 +94,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: COLORS.white,
     padding: 10,
+    marginBottom: hp(1)
   },
   priceContainer: {
     flexDirection: "row",

@@ -5,6 +5,7 @@ import ProfileScreen from '../scrrens/Profile/ProfileScreen';
 import ProductItemScreen from '../scrrens/Product/ProductItemScreen';
 import AddressFormScreen from '../scrrens/Address/AddressFormScreen';
 import AddressScreen from '../scrrens/Address/AddressScreen';
+import SeeAllDealsScreen from '../scrrens/deals/SeeAllDealsScreen';
 
 const HomeStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
@@ -18,6 +19,7 @@ function HomeStackScreen() {
       <HomeStack.Screen name="ProductItem" component={ProductItemScreen} />
       <HomeStack.Screen name="Address" component={AddressScreen} />
       <HomeStack.Screen name="AddressForm" component={AddressFormScreen} />
+      <HomeStack.Screen name="SeeAllDeals" component={SeeAllDealsScreen} />
     </HomeStack.Navigator>
   );
 }

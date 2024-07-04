@@ -6,6 +6,8 @@ import {
     heightPercentageToDP as hp,
   } from "react-native-responsive-screen";
 import { COLORS } from '../theme';
+import { useNavigation } from '@react-navigation/native';
+
 const DealCard = ({item}) => {
     return (
         <View style={styles.cardContainer}>
@@ -18,9 +20,15 @@ const DealCard = ({item}) => {
 }
 
 const TodaysDeals = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
+        <View style={styles.header}>
         <Text style={styles.title}>Today's Deals</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('SeeAllDeals')}>
+                <Text style={styles.viewAll}>View All</Text>
+            </TouchableOpacity>
+        </View>
      <FlatList 
      data={TodaysDealsData}
      renderItem={DealCard}
@@ -39,6 +47,12 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
      },
+     header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: hp("1%")
+     },
      cardContainer: {
       backgroundColor: "white"
      },
@@ -46,6 +60,12 @@ const styles = StyleSheet.create({
         fontSize: hp("2%"),
         fontWeight: 'bold',
         marginBottom: 10
+     },
+     viewAll: {
+        color: COLORS.primary,
+        fontSize: hp("1.6%"),
+        fontWeight: 'bold',
+        textAlign: 'center'
      },
      image: {
         width: wp('40%'),

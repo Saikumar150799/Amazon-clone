@@ -23,63 +23,89 @@ import { Divider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import Header from "../../components/Header";
+import { useCartStore } from "../../store";
 
 const ProductItemScreen = () => {
+  const [isItemAdded, setIsItemAdded] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true);
+
   const navigation = useNavigation();
+
   const { params } = useRoute();
+
   const product = params.product || {};
-  console.log("")
+
   const [productItem, setProductItem] = useState(null);
+
   const [isLiked, setIsLiked] = useState(false);
+
+  const addToCart = useCartStore((state) => state.addToCart);
+
+  const productPresentCart = useCartStore((state) => state.productPresentCart);
+
+  const cartLength = useCartStore((state) => state.cartLength());
+
   useEffect(() => {
     async function fetchProductById() {
-      const response = await axios.get(`https://fakestoreapi.com/products/${product.id}`);
+      const response = await axios.get(
+        `https://fakestoreapi.com/products/${product.id}`
+      );
       const data = response.data;
-      setProductItem(data);
-      console.log("productItem", productItem);
+      setProductItem(data || null);
     }
+    if (productPresentCart(product.id)) {
+      setIsItemAdded(true);
+    }
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
     product.id ? fetchProductById() : setProductItem(product);
   }, []);
   return (
     <>
       {productItem === null ? (
         <SafeAreaView>
-              <Header />
+          <Header />
           <ActivityIndicator size="small" color={COLORS.black} />
         </SafeAreaView>
       ) : (
         <SafeAreaView style={styles.container}>
-              <Header showBackButton={true}/>
+          <Header showBackButton={true} />
           <ScrollView>
             <View style={{ padding: 10 }}>
-
-              <ImageBackground
-                resizeMode="contain"
-                source={{ uri: productItem.image }}
-                style={styles.image}
-              >
-                <View style={styles.imageContainer}>
-                  <View style={styles.offer}>
-                    <Text style={styles.offerText}>
-                      {((10 / productItem.price) * 100).toFixed(0)}%
-                    </Text>
-                    <Text style={styles.offerText}>off</Text>
-                  </View>
-                  <View style={styles.share}>
-                    <Ionicons name="share-social" size={24} color="black" />
-                  </View>
-                </View>
-                <TouchableOpacity
-                  style={styles.heart}
-                  onPress={() => setIsLiked(!isLiked)}
+              {isLoading ? (
+                <ActivityIndicator size="small" color={COLORS.black} />
+              ) : (
+                <ImageBackground
+                  resizeMode="contain"
+                  source={{ uri: productItem.image }}
+                  style={styles.image}
                 >
-                  <MaterialCommunityIcons
-                    name={isLiked ? "cards-heart" : "cards-heart-outline"}
-                    size={25}
-                    color={isLiked ? COLORS.red : COLORS.black}
-                  />
-                </TouchableOpacity>
-              </ImageBackground>
+                  <View style={styles.imageContainer}>
+                    <View style={styles.offer}>
+                      <Text style={styles.offerText}>
+                        {((10 / productItem.price) * 100).toFixed(0)}%
+                      </Text>
+                      <Text style={styles.offerText}>off</Text>
+                    </View>
+                    <View style={styles.share}>
+                      <Ionicons name="share-social" size={24} color="black" />
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.heart}
+                    onPress={() => setIsLiked(!isLiked)}
+                  >
+                    <MaterialCommunityIcons
+                      name={isLiked ? "cards-heart" : "cards-heart-outline"}
+                      size={25}
+                      color={isLiked ? COLORS.red : COLORS.black}
+                    />
+                  </TouchableOpacity>
+                </ImageBackground>
+              )}
               <View style={styles.rating}>
                 <Text style={styles.category}>{productItem.category}</Text>
                 <AirbnbRating
@@ -106,7 +132,7 @@ const ProductItemScreen = () => {
                 <Text style={styles.price}>₹{productItem.price}</Text>
               </View>
             </View>
-            
+
             <Divider bold={true} style={{ marginVertical: 10 }} />
 
             <View style={styles.discountContainer}>
@@ -147,22 +173,44 @@ const ProductItemScreen = () => {
             </View>
 
             <View style={styles.deliveryContainer}>
-                <Text style={styles.deliveryText}>FREE delivery Thursday, 14th May. Order within 1hr 41 mins.</Text>
-                <View style={styles.locationContainer}>
-            <Ionicons name="location-outline" size={22} color="black" />
-            <Text style={styles.locationText}>Deliver to Saikumar - Banaglore 560032</Text>
-          </View>
+              <Text style={styles.deliveryText}>
+                FREE delivery Thursday, 14th May. Order within 1hr 41 mins.
+              </Text>
+              <View style={styles.locationContainer}>
+                <Ionicons name="location-outline" size={22} color="black" />
+                <Text style={styles.locationText}>
+                  Deliver to Saikumar - Banaglore 560032
+                </Text>
+              </View>
             </View>
 
             <Text style={styles.inStock}>In Stock</Text>
 
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={[styles.button, {backgroundColor: COLORS.yellow}]} onPress={() => navigation.navigate('Cart')}>
-                    <Text style={styles.buttonText}>Add to Cart</Text>
+              {isItemAdded ? (
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Cart")}
+                  style={[styles.button, { backgroundColor: COLORS.yellow }]}
+                >
+                  <Text style={styles.buttonText}>Added to Cart</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, {backgroundColor: COLORS.orange}]}>
-                    <Text style={styles.buttonText}>Buy Now</Text>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => {
+                    addToCart(productItem);
+                    setIsItemAdded(true);
+                  }}
+                  style={[styles.button, { backgroundColor: COLORS.yellow }]}
+                >
+                  <Text style={styles.buttonText}>Add to Cart</Text>
                 </TouchableOpacity>
+              )}
+
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: COLORS.orange }]}
+              >
+                <Text style={styles.buttonText}>Buy Now</Text>
+              </TouchableOpacity>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -189,7 +237,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.white,
     flex: 1,
-    
   },
   category: {
     fontSize: hp("1.7%"),
@@ -212,7 +259,7 @@ const styles = StyleSheet.create({
     width: 40,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: "50%",
+    borderRadius: 50,
   },
   offerText: {
     color: COLORS.white,
@@ -247,7 +294,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal:10
+    paddingHorizontal: 10,
   },
   discountText: {
     fontSize: hp("2%"),
@@ -287,18 +334,18 @@ const styles = StyleSheet.create({
   },
   deliveryContainer: {
     padding: 10,
-},
-deliveryText: {
+  },
+  deliveryText: {
     fontSize: hp("1.7%"),
     fontWeight: "400",
     color: COLORS.primary,
-},
-locationText: {
+  },
+  locationText: {
     fontSize: hp("1.7%"),
     fontWeight: "400",
-},
-locationContainer: {
-      marginTop:  10,
+  },
+  locationContainer: {
+    marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
   },

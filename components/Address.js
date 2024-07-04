@@ -7,17 +7,24 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-const Address = () => {
+import { useAddressStore } from "../store";
+const Address = ({ address }) => {
+  const setDefaultAddress = useAddressStore((state) => state.setDefaultAddress);
+
+  console.log("Address")
+  const country = address.country.split(" ")[0];
   return (
-      <Card contentStyle={{ backgroundColor: COLORS.white,marginBottom:10 }}>
+    <View style={{marginBottom: hp(1)}}>
+
+      <Card contentStyle={{ backgroundColor: COLORS.white }}>
         <Card.Content>
-          <Text style={styles.title}>Saikumar</Text>
-          <Text style={styles.text}>+91 9876543210</Text>
+          <Text style={styles.title}>{address.name}</Text>
+          <Text style={styles.text}>+{address.code} {address.phoneNumber}</Text>
           <Text style={styles.text}>
-            Flat 101, Building 101, 101 Main Street, Indiranagar
+            {address.address}
           </Text>
-          <Text style={styles.text}>BENALURU, Karnataka 560103</Text>
-          <Text style={styles.text}>Phone Number: 560103</Text>
+          <Text style={styles.text}>{address.flat}{address.street}{address.landmark}</Text>
+            <Text style={styles.text}>{country}</Text>
           <Text style={styles.delivery}>Add delivery instructions</Text>
           <View style={styles.row}>
             <Ionicons name="location" size={22} color={COLORS.red} />
@@ -30,12 +37,13 @@ const Address = () => {
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Remove</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => setDefaultAddress(address.id)}>
               <Text style={styles.buttonText}>Set as Default</Text>
             </TouchableOpacity>
           </View>
         </Card.Content>
       </Card>
+    </View>
   );
 };
 
@@ -68,6 +76,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: 'lightgrey',
+    backgroundColor: 'white',
     shadowColor: 'black',
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.20,

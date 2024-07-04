@@ -56,5 +56,6 @@ const styles = StyleSheet.create({
       marginRight: 8,
       borderRadius: 5,
       overflow: 'hidden',
+      marginBottom: hp(1)
     }
 })

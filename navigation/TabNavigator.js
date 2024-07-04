@@ -12,13 +12,15 @@ import { COLORS } from "../theme";
 import { Text } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import MenuScreen from "../scrrens/Menu/MenuScreen";
+import { useCartStore } from "../store";
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  const cartLength = useCartStore((state) => state.cartLength());
   return (
     <Tab.Navigator
       initialRouteName="HomeStack"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, tabBarStyle: {borderTopWidth: 0} }}
     >
       <Tab.Screen
         name="HomeStack"
@@ -96,7 +98,7 @@ const TabNavigator = () => {
             fontSize: 12,
             fontWeight: 600,
           },
-          tabBarBadge: 3,
+          tabBarBadge: cartLength > 0 ? cartLength : null,
           tabBarBadgeStyle: {
             backgroundColor: COLORS.red,
             borderRadius: 10,

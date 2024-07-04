@@ -18,8 +18,12 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS } from "../../theme";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from '@expo/vector-icons';
+import { ToastProvider } from 'react-native-toast-notifications'
 const SignUp = () => {
   const navigation = useNavigation();
+  const showToast = () => {
+
+  }
   return (
     <KeyboardAvoidingView
     style={{ flex: 1 }}
@@ -68,7 +72,7 @@ const SignUp = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={showToast}>
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
         <View style={styles.alreadyHaveAccount}>

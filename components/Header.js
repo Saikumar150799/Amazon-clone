@@ -16,11 +16,13 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 const Header = ({ showBackButton = false }) => {
   const navigation = useNavigation();
   return (
-    <View style={{ marginTop: -getStatusBarHeight() }}>
-        <CustomStatusBar style="dark" backgroundColor={COLORS.primary} />
+    <View style={{ marginTop: -getStatusBarHeight() + hp("3%") }}>
+        <CustomStatusBar style="dark" backgroundColor={COLORS.secondary} />
       <LinearGradient
-        colors={[COLORS.primary, COLORS.secondary]}
+        colors={[COLORS.primary, COLORS.secondary, COLORS.tertiary]}
         style={styles.gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
       >
         <View style={styles.headerContainer}>
           {showBackButton && (

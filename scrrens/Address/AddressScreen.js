@@ -12,9 +12,12 @@ import { COLORS } from "../../theme";
 import { useNavigation } from "@react-navigation/native";
 import Address from "../../components/Address";
 import { ScrollView } from "react-native-virtualized-view";
+import { useAddressStore } from "../../store";
 
 const AddressScreen = () => {
   const navigation = useNavigation();
+  const addresses = useAddressStore((state) => state.address);
+
   return (
     <SafeAreaView style={styles.container}>
       <Header showBackButton={true} />
@@ -31,9 +34,9 @@ const AddressScreen = () => {
           <Text style={styles.buttonText}>Add a new pickup location</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </Pressable>
-
-        <Address />
-        <Address />
+        {addresses.map((item) => (
+          <Address key={item.id} address={item} />
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -56,7 +59,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: COLORS.gray,
+    backgroundColor: COLORS.darkGray,
     paddingHorizontal: wp(2),
     marginVertical: hp(0.8),
     borderRadius: hp(0.5),

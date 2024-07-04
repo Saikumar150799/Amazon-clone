@@ -13,7 +13,7 @@ const Sliders = () => {
         showsHorizontalScrollIndicator={false}
         data={SliderImages}
         renderItem={({ item, index }) => (
-          <Image source={{ uri: item }} key={index} style={styles.image} />
+          <Image source={ item } key={index} style={styles.image} />
         )}
       />
     </View>

@@ -20,7 +20,7 @@ const ProfileScreen = () => {
   const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ marginTop: -getStatusBarHeight() }}>
+      <View style={{ marginTop: -getStatusBarHeight() + hp("3%") }}>
         <CustomStatusBar style="dark" backgroundColor={COLORS.primary} />
         <LinearGradient
           colors={[COLORS.primary, COLORS.secondary]}

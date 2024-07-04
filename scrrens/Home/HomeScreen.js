@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-virtualized-view";
 import React, { useCallback, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,22 +18,17 @@ import axios from "axios";
 import { useState } from "react";
 import Header from "../../components/Header";
 import { useNavigation } from "@react-navigation/native";
+import { categories } from "../../data";
+import { ActivityIndicator } from "react-native-paper";
+import { useAddressStore } from "../../store";
+
 
 const HomeScreen = () => {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
 
-  const getCategories = useCallback(async () => {
-    try {
-      const categories = await axios.get(
-        "https://dummyjson.com/products/categories"
-      );
-      setCategories(categories.data);
-    } catch (error) {
-      console.error("Error fetching categories", error);
-    }
-  }, []);
+  const defaultAddress = useAddressStore((state) => state.getDefaultAddress());
+
 
   const getProducts = useCallback(async () => {
     try {
@@ -45,9 +40,17 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    getCategories();
     getProducts();
-  }, [getCategories, getProducts]);
+    console.log("defaultAddress========>>>>>", defaultAddress);
+  }, [getProducts]);
+
+  if (products.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="small" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -58,7 +61,7 @@ const HomeScreen = () => {
           onPress={() => navigation.navigate("Address")}
         >
           <Ionicons name="location-outline" size={22} color="black" />
-          <Text>Deliver to Saikumar - Banaglore 560032</Text>
+          <Text>Deliver to {defaultAddress?.name} - {defaultAddress?.state} {defaultAddress?.pinCode}</Text>
           <Feather name="chevron-down" size={24} color="black" />
         </Pressable>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -84,8 +87,6 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: COLORS.primary,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.primary,
     padding: 10,

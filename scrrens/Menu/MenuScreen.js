@@ -81,7 +81,7 @@ const MenuScreen = () => {
       {!loading && (
         <LinearGradient colors={[COLORS.primary, COLORS.secondary]}>
           <ScrollView
-            style={{ padding: 10, marginBottom: useBottomTabBarHeight() + 20 }}
+            style={{ padding: 10, marginBottom: useBottomTabBarHeight() }}
           >
             <FlatList
               data={menu}

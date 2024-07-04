@@ -10,53 +10,89 @@ import { Divider, ProgressBar } from "react-native-paper";
 import { Checkbox } from "react-native-paper";
 import { COLORS } from "../../theme";
 import { ScrollView } from "react-native-virtualized-view";
-import { MaterialIcons } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
+import { MaterialIcons } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 import CartItem from "../../components/CartItem";
+import { useCartStore } from "../../store";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from '@expo/vector-icons';
 const CartScreen = () => {
-  const [checked, setChecked] = React.useState(false);
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Header />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.subtotal}>
-          <Text style={styles.subtotalText}>Subtotal</Text>
-          <Text style={styles.subtotalPrice}>₹8793</Text>
-        </View>
-        <View style={styles.progressBarContainer}>
-          <ProgressBar
-            color={COLORS.darkGreen}
-            progress={0.5}
-            style={styles.progressBar}
-          />
-          <Text style={styles.progressBarText}>₹499</Text>
-        </View>
-        <Text style={styles.addItemsWorth}>
-          Add items worth ₹300.00 for FREE Delivery.
-        </Text>
-        <TouchableOpacity style={styles.checkoutButton}>
-          <Text style={styles.checkoutButtonText}>Proceed to Buy (1 item)</Text>
-        </TouchableOpacity>
-        <View style={styles.checkboxContainer}>
-          <Checkbox.Android
-            status={checked ? "checked" : "unchecked"}
-            mode="android"
-            onPress={() => {
-              setChecked(!checked);
-            }}
-            color={COLORS.primary}
-          />
-          <Text style={styles.checkboxText}>
-            Send as a gift. Incluse custom message
-          </Text>
-        </View>
+  const navigation = useNavigation();
 
-        <Divider bold={true} />
-          {Array.from({length: 10}).map((_, index) => (
-            <CartItem key={index} />
-          ))}
-      </ScrollView>
-    </SafeAreaView>
+  const [checked, setChecked] = React.useState(false);
+  const cartData = useCartStore((state) => state.products);
+  const cartTotal = useCartStore((state) => state.cartTotal());
+  const cartLength = useCartStore((state) => state.cartLength());
+
+  console.log("cart", cartTotal);
+
+  return (
+    <>
+      {cartTotal === 0 ? (
+        <ScrollView>
+
+        <View style={styles.emptyCart}>
+          <Image resizeMode="contain" source={require("../../assets/emptyCart.webp"  )}  style={styles.emptyCartImage}/>
+          <Text style={styles.emptyText}>Your Amazon Cart is empty</Text>
+        </View>
+        </ScrollView>
+      ) : (
+        <SafeAreaView style={{ flex: 1 }}>
+          <Header />
+          <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.subtotal}>
+              <Text style={styles.subtotalText}>Subtotal</Text>
+              <Text style={styles.subtotalPrice}>₹{cartTotal}</Text>
+            </View>
+            <View style={styles.progressBarContainer}>
+              <ProgressBar
+                color={COLORS.darkGreen}
+                progress={cartTotal >= 300 ? 1 : cartTotal / 300}
+                style={styles.progressBar}
+              />
+              <Text style={styles.progressBarText}>₹499</Text>
+            </View>
+            {cartTotal >= 300 && (
+              
+              <View style={styles.freeDelivery} >
+            <Ionicons name="checkmark-circle" size={24} color={COLORS.green} />
+              <Text style={styles.freeDeliveryText}>Your order is eligible for FREE Delivery.</Text>
+            </View>
+            )}
+            <Text style={styles.addItemsWorth}>
+              Add items worth ₹300.00 for FREE Delivery.
+            </Text>
+
+            <TouchableOpacity style={styles.checkoutButton}>
+              <Text style={styles.checkoutButtonText}>
+                Proceed to Buy (1 item)
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.checkboxContainer}>
+              <Checkbox.Android
+                status={checked ? "checked" : "unchecked"}
+                mode="android"
+                onPress={() => {
+                  setChecked(!checked);
+                }}
+                color={COLORS.primary}
+              />
+              <Text style={styles.checkboxText}>
+                Send as a gift. Incluse custom message
+              </Text>
+            </View>
+
+            <Divider bold={true} />
+            {cartData.map((item, index) => (
+              <CartItem key={index} product={item} />
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      )}
+    </>
   );
 };
 
@@ -89,7 +125,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: hp(2),
+    marginBottom: hp(1),
   },
   progressBarText: {
     fontSize: hp(2),
@@ -126,13 +162,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: hp(2),
     gap: wp(2),
-    backgroundColor: 'lightgray',
+    backgroundColor: "lightgray",
     padding: 10,
     borderRadius: 10,
     marginTop: hp(2),
   },
-  imageContainer: {
-  },
+  imageContainer: {},
   image: {
     width: wp("40%"),
     height: hp("20%"),
@@ -143,7 +178,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: hp(1.8),
-    fontWeight: "500"
+    fontWeight: "500",
   },
   discount: {
     backgroundColor: COLORS.red,
@@ -163,7 +198,6 @@ const styles = StyleSheet.create({
   },
   shipping: {
     fontSize: hp(1.7),
-
   },
   stock: {
     fontSize: hp(1.7),
@@ -210,5 +244,31 @@ const styles = StyleSheet.create({
     marginLeft: wp(3),
     borderWidth: 1.5,
     borderColor: COLORS.darkGray,
+  },
+  emptyCart: {
+    flex:1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyCartImage: {
+    width: wp("100%"),
+    height: hp("80%"),
+  },
+  emptyText: {
+    fontSize: hp(3),
+    textAlign: "center",
+    fontWeight: "bold",
+    bottom: hp("20%"),
+  },
+  freeDelivery: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: wp(2),
+    marginBottom: hp(1),
+
+  },
+  freeDeliveryText: {
+    fontSize: hp(2),
+    color: COLORS.green,
   },
 });
